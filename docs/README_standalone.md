@@ -10,6 +10,18 @@ This tutorial explains how to build and start a docker image that includes all t
 
 Before you proceed, install [Docker and Docker Compose](https://docs.docker.com/compose/#installation-and-set-up).
 
+## Create an arm64 Liberty image
+
+There is currently no official Liberty image (with JDK8) built for arm64.
+
+Tim Raasveld explained [here](https://github.com/OpenLiberty/ci.docker/issues/241) how to build an OpenLiberty with OpenJDK 8 image for such architecture:
+
+```console
+git clone git@github.com:OpenLiberty/ci.docker.git
+cd ci.docker/build
+./build.sh --dir=../releases/latest/full --dockerfile=Dockerfile.ubuntu.openjdk8 --tag=open-liberty:full
+```
+
 ### Install Operational Decision Manager
 
 To create the Operational Decision Manager docker image, install one of the following components:    
