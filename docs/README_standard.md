@@ -1,13 +1,23 @@
+> :warning: **This dev branch contains instructions to build a test image for arm64 architecture**: It's not supported at all and is only there waiting for an official amr64 port of WLP!
 
 This tutorial explains how to start an IBM Operational Decision Manager unclustered docker topology for development, using Docker Compose.
 
-
 ![Flow](images/Fig1.png)
-
-
 
 ## Setting up your environment
 Before you proceed, install [Docker and Docker Compose](https://docs.docker.com/compose/#installation-and-set-up).
+
+## Create an Liberty arm64 image
+
+There is currently no official Liberty image (with JDK8) built for arm64.
+
+Tim Raasveld explained [here](https://github.com/OpenLiberty/ci.docker/issues/241) how to build an OpenLiberty with OpenJDK 8 image for such architecture:
+
+```console
+git clone git@github.com:OpenLiberty/ci.docker.git
+cd ci.docker/build
+./build.sh --dir=../releases/latest/full --dockerfile=Dockerfile.ubuntu.openjdk8 --tag=open-liberty:full
+```
 
 ### Install Operational Decision Manager
 To create Operational Decision Manager docker images, install one of the following components:         

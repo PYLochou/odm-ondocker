@@ -62,9 +62,9 @@ COPY --chown=1001:0 $ODMDOCKERDIR/common/resources/ibm-public.crt /config/resour
 
 COPY --chown=1001:0 $ODMDOCKERDIR/common/drivers /config/resources
 RUN chmod -R 777 /config
-RUN sed -i 's|# Pass on to the real server run|. /script/rundc.sh|' /opt/ibm/helpers/runtime/docker-server.sh
-# https://www.ibm.com/support/pages/apar/IJ39517 Workaround 
-RUN sed -i 's|security.provider.2=com.ibm.crypto.plus.provider.IBMJCEPlus|security.provider.2=com.ibm.crypto.provider.IBMJCE|' /opt/ibm/java/jre/lib/security/java.security && sed -i 's|security.provider.3=com.ibm.crypto.provider.IBMJCE|security.provider.3=com.ibm.crypto.plus.provider.IBMJCEPlus|' /opt/ibm/java/jre/lib/security/java.security
+RUN sed -i 's|# Pass on to the real server run|. /script/rundc.sh|' /opt/ol/helpers/runtime/docker-server.sh
+# https://www.ibm.com/support/pages/apar/IJ39517 Workaround
+RUN sed -i 's|security.provider.2=com.ibm.crypto.plus.provider.IBMJCEPlus|security.provider.2=com.ibm.crypto.provider.IBMJCE|' /opt/java/openjdk/lib/security/java.security && sed -i 's|security.provider.3=com.ibm.crypto.provider.IBMJCE|security.provider.3=com.ibm.crypto.plus.provider.IBMJCEPlus|' /opt/java/openjdk/lib/security/java.security
 
 FROM ${FROMLIBERTY}
 ARG ODMDOCKERDIR
@@ -76,7 +76,6 @@ LABEL name="Decision Center"
 LABEL io.k8s.display-name="Decision Center"
 LABEL description="Decision Center is a web application where business users author, model, and manage decisions\
  with limited or no dependence on the IT department."
-
 
 LABEL summary="Decision Center is a web application to manage and author decisions."
 LABEL io.k8s.description="Decision Center is a web application to manage and author decisions."
@@ -90,14 +89,13 @@ ENV ODMDOCKERDIR $ODMDOCKERDIR
 ENV SCRIPT /script
 ENV APPS /config/apps
 
-COPY --from=oidc-liberty-builder /opt/ibm/wlp /opt/ibm/wlp
-COPY --from=oidc-liberty-builder /opt/ibm/helpers/runtime/docker-server.sh /opt/ibm/helpers/runtime/docker-server.sh
-# https://www.ibm.com/support/pages/apar/IJ39517 Workaround 
-COPY --from=oidc-liberty-builder  /opt/ibm/java/jre/lib/security/java.security  /opt/ibm/java/jre/lib/security/java.security
+COPY --from=oidc-liberty-builder /opt/ol/wlp /opt/ol/wlp
+COPY --from=oidc-liberty-builder /opt/ol/helpers/runtime/docker-server.sh /opt/ol/helpers/runtime/docker-server.sh
+# https://www.ibm.com/support/pages/apar/IJ39517 Workaround
+COPY --from=oidc-liberty-builder /opt/java/openjdk/lib/security/java.security /opt/java/openjdk/lib/security/java.security
 
 # Welcome page
 COPY --from=builder --chown=1001:0 /welcomepage/target/welcomepage.war $APPS
-
 
 # Copy Artifact
 COPY --from=builder --chown=1001:0 $APPS $APPS
@@ -106,5 +104,7 @@ COPY --from=builder --chown=1001:0 $SCRIPT $SCRIPT
 
 # License
 COPY --from=builder  --chown=1001:0 /licenses /licenses
+USER root
+RUN cd /opt && ln -s ol ibm
 USER 1001
 EXPOSE 9060 9453
