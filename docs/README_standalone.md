@@ -42,7 +42,7 @@ _installation_directory/executionserver/applicationservers/WLP*/DecisionRunner.w
 
 ### Clone the odm-ondocker code
 
-From the ODM installation directory, enter ```git clone https://github.com/ODMDev/odm-ondocker.git```.
+From the ODM installation directory, enter ```git clone git@github.com:PYLochou/odm-ondocker.git --branch build-arm64```.
 
 ### Copy .dockerignore file
 
