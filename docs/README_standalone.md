@@ -1,10 +1,10 @@
 # Standalone topology
 
+> :warning: **This dev branch contains instructions to build a test image for arm64 architecture**: It's not supported at all and is only there waiting for an official amr64 port of WLP!
+
 This tutorial explains how to build and start a docker image that includes all the IBM Operational Decision Manager components in one container.
 
 ![Flow](images/StandaloneFig01.png)
-
-
 
 ## Setting up your environment
 
