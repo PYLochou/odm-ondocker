@@ -10,7 +10,7 @@ This tutorial explains how to build and start a docker image that includes all t
 
 Before you proceed, install [Docker and Docker Compose](https://docs.docker.com/compose/#installation-and-set-up).
 
-## Create an arm64 Liberty image
+## Create an Liberty arm64 image
 
 There is currently no official Liberty image (with JDK8) built for arm64.
 
