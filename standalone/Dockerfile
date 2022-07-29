@@ -20,7 +20,7 @@ RUN set -ex; \
       touch /use_loan_server; \
       if [ -f /welcomepage/src/main/webapp/index.jsp ]; then \
         sed -i 's/ loan-server-hidden//g' /welcomepage/src/main/webapp/index.jsp; \
-      fi; \  
+      fi; \
     fi
 
 
@@ -98,6 +98,7 @@ COPY ${ODMDOCKERDIR}/common/script ${ODMDOCKERDIR}/wlp* /opt/wlppackage/
 RUN set -ex; \
     mkdir ${SCRIPT}; \
     mv /opt/wlppackage/*.sh ${SCRIPT}; \
+    echo "wlp.featuresbom=com.ibm.websphere.appserver.features:features:22.0.0.7" > /opt/ol/wlp/etc/featureUtility.properties; \
     $SCRIPT/installFeatures.sh
 
 COPY --chown=1001:0 ${ODMDOCKERDIR}/standalone/licenses $APPS/licenses
@@ -125,7 +126,8 @@ ENV SCRIPT /script
 ENV APPS /config/apps
 
 # Install require Liberty features
-COPY --from=liberty-builder /opt/ibm/wlp /opt/ibm/wlp
+COPY --from=liberty-builder /opt/ol/wlp /opt/ol/wlp
+RUN ln -s /opt/ol /opt/ibm
 
 COPY --from=builder --chown=1001:0 /config/dbdata /config
 ENV CONNECTION_POOL_SIZE 20
