@@ -53,9 +53,9 @@ COPY --chown=1001:0 $ODMDOCKERDIR/common/security/truststore.jks /config/securit
 COPY --chown=1001:0 $ODMDOCKERDIR/common/drivers /config/resources
 COPY --chown=1001:0 $ODMDOCKERDIR/common/config/jvm/jvm.options /config/configDropins/overrides/jvm.options
 RUN chmod -R 777 /config
-RUN sed -i 's|# Pass on to the real server run|. /script/runds.sh|' /opt/ibm/helpers/runtime/docker-server.sh
-# https://www.ibm.com/support/pages/apar/IJ39517 Workaround 
-RUN sed -i 's|security.provider.2=com.ibm.crypto.plus.provider.IBMJCEPlus|security.provider.2=com.ibm.crypto.provider.IBMJCE|' /opt/ibm/java/jre/lib/security/java.security && sed -i 's|security.provider.3=com.ibm.crypto.provider.IBMJCE|security.provider.3=com.ibm.crypto.plus.provider.IBMJCEPlus|' /opt/ibm/java/jre/lib/security/java.security
+RUN sed -i 's|# Pass on to the real server run|. /script/runds.sh|' /opt/ol/helpers/runtime/docker-server.sh
+# https://www.ibm.com/support/pages/apar/IJ39517 Workaround
+RUN sed -i 's|security.provider.2=com.ibm.crypto.plus.provider.IBMJCEPlus|security.provider.2=com.ibm.crypto.provider.IBMJCE|' /opt/java/openjdk/lib/security/java.security && sed -i 's|security.provider.3=com.ibm.crypto.provider.IBMJCE|security.provider.3=com.ibm.crypto.plus.provider.IBMJCEPlus|' /opt/java/openjdk/lib/security/java.security
 
 FROM ${FROMLIBERTY}
 ARG ODMDOCKERDIR
@@ -69,7 +69,6 @@ LABEL io.k8s.display-name="Decision Server Runtime"
 LABEL description="The Decision Service Runtime exposes a decision service as \
  a web service with REST/JSON endpoints."
 
-
 LABEL summary="The Decision Server Runtime REST API."
 LABEL io.k8s.description="The Decision Server Runtime REST API."
 
@@ -79,8 +78,6 @@ LABEL ProductVersion=${ODMVERSION}
 LABEL ProductID="IBM Operational Decision Manager for production"
 LABEL io.openshift.tags="odm,dba,dbamc"
 
-
-
 ENV APP_NAME DecisionServerRuntime
 ENV ODMDOCKERDIR $ODMDOCKERDIR
 ENV SCRIPT /script
@@ -88,10 +85,10 @@ ENV APPS /config/apps
 ENV CONNECTION_POOL_SIZE 60
 ENV DECISIONSERVERCONSOLE_NAME $DECISIONSERVERCONSOLE_NAME
 
-COPY --from=oidc-liberty-builder /opt/ibm/wlp /opt/ibm/wlp
-COPY --from=oidc-liberty-builder /opt/ibm/helpers/runtime/docker-server.sh /opt/ibm/helpers/runtime/docker-server.sh
-# https://www.ibm.com/support/pages/apar/IJ39517 Workaround 
-COPY --from=oidc-liberty-builder  /opt/ibm/java/jre/lib/security/java.security  /opt/ibm/java/jre/lib/security/java.security
+COPY --from=oidc-liberty-builder /opt/ol/wlp /opt/ol/wlp
+COPY --from=oidc-liberty-builder /opt/ol/helpers/runtime/docker-server.sh /opt/ol/helpers/runtime/docker-server.sh
+# https://www.ibm.com/support/pages/apar/IJ39517 Workaround
+COPY --from=oidc-liberty-builder /opt/java/openjdk/lib/security/java.security /opt/java/openjdk/lib/security/java.security
 # Translation Script
 COPY --from=builder --chown=1001:0 /translation /translation
 # Welcome page
@@ -102,6 +99,8 @@ COPY --from=builder --chown=1001:0 /config/resources/postgres*  /config/resource
 COPY --from=builder --chown=1001:0 $SCRIPT $SCRIPT
 
 # License
-COPY --from=builder  --chown=1001:0 /licenses /licenses
+COPY --from=builder --chown=1001:0 /licenses /licenses
+USER root
+RUN cd /opt && ln -s ol ibm
 USER 1001
 EXPOSE 9080 9443
